@@ -1,0 +1,7 @@
+*.pyc
+*.egg-info
+__pycache__
+dist
+
+venv
+example_project/db.sqlite3

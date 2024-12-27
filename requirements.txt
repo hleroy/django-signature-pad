@@ -1,0 +1,9 @@
+django
+django-coverage-plugin
+pytest
+pytest-sugar
+pytest-django
+ruff
+coverage
+djlint
+pre-commit

@@ -1,0 +1,16 @@
+{# signature_pad/templates/signature_pad/widgets/signature_pad.html #}
+<div class="signature-pad-container" id="{{ widget.attrs.id }}-container">
+  <div class="signature-pad-wrapper">
+    <canvas id="{{ widget.attrs.id }}-pad"
+            width="{{ widget.attrs.width }}"
+            height="{{ widget.attrs.height }}">
+    </canvas>
+  </div>
+  <div class="signature-pad-controls">
+    <button type="button" class="clear-button">Clear</button>
+  </div>
+  <input id="{{ widget.attrs.id }}"
+         type="hidden"
+         name="{{ widget.name }}"
+         value="{{ widget.value }}" />
+</div>

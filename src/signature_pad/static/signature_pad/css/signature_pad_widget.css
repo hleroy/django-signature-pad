@@ -1,0 +1,43 @@
+/* signature_pad/static/signature_pad/css/signature_pad.css */
+.signature-pad-container {
+    display: inline-block;
+    margin: 1rem 0;
+    padding: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    margin-bottom: 0.5rem;
+}
+
+.signature-pad-wrapper {
+    display: inline-block;
+    background-color: #f8f9fa;
+}
+
+.signature-pad-wrapper canvas {
+    display: block;
+}
+
+.signature-pad-controls {
+    margin-top: 0.5rem;
+    padding-top: 0.5rem;
+    border-top: 1px solid #dee2e6;
+}
+
+.clear-button {
+    background: none;
+    border: none;
+    padding: 0;
+    color: #0d6efd;
+    text-decoration: none;
+    cursor: pointer;
+    font: inherit;
+}
+
+.clear-button:hover {
+    color: #0a58ca;
+    background: none;
+}
+
+.clear-button:focus {
+    outline: none;
+}

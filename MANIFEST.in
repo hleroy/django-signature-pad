@@ -1,0 +1,4 @@
+include LICENSE
+include README.md
+recursive-include src/signature_pad/static *
+recursive-include src/signature_pad/templates *

@@ -1,0 +1,13 @@
+{# demo/templates/demo/document_form.html #}
+{% extends "base.html" %}
+
+{% block content %}
+  <h1>Add Document</h1>
+  {{ form.media }}
+  <form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Save</button>
+  </form>
+  <a href="{% url 'document_list' %}">Back to list</a>
+{% endblock content %}
