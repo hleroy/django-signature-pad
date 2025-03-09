@@ -34,7 +34,7 @@ This will generate distribution archives in the `dist/` directory.
 
 Test Your Package: Before uploading to the official PyPI, you can test your package on TestPyPI.
 
-`hatch publish --repository-url https://test.pypi.org/legacy/`
+`hatch publish -r test`
 
 Install your package from TestPyPI to ensure everything works as expected:
 

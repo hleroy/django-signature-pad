@@ -57,7 +57,19 @@ class Document(models.Model):
     signature = SignaturePadField(blank=True, null=True)
 ```
 
-3. Use it in your form:
+3. Create a form for your model:
+
+```python
+from django import forms
+from .models import Document
+
+class DocumentForm(forms.ModelForm):
+    class Meta:
+        model = Document
+        fields = ['signature']  # Include other fields as needed
+```
+
+4. Use the form in your template:
 
 ```html
 {{ form.media }}
@@ -67,11 +79,42 @@ class Document(models.Model):
 </form>
 ```
 
-4. Render signature image:
+5. Render signature image:
 
 ```html
 <img src="{{ obj.signature }}" alt="Signature" />
 ```
+
+Widget customization (optional):
+
+```python
+from django import forms
+from signature_pad import SignaturePadWidget
+from .models import Document
+
+class DocumentForm(forms.ModelForm):
+    signature = forms.CharField(
+        widget=SignaturePadWidget(
+            dotSize=2.5,
+            minWidth=1.0,
+            maxWidth=4.0,
+            backgroundColor="rgb(240, 240, 240)",
+            penColor="rgb(0, 0, 255)"
+        )
+    )
+
+    class Meta:
+        model = Document
+        fields = ["name", "signature"]
+```
+
+Available customization options:
+
+    dotSize: Size of the drawing dot (float)
+    minWidth: Minimum width of the signature line (float)
+    maxWidth: Maximum width of the signature line (float)
+    backgroundColor: Canvas background color (CSS color string)
+    penColor: Signature line color (CSS color string)
 
 ## Example Project
 
