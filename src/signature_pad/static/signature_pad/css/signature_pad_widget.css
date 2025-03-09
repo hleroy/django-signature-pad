@@ -1,20 +1,31 @@
-/* signature_pad/static/signature_pad/css/signature_pad.css */
+/* signature_pad/static/signature_pad/css/signature_pad_widget.css */
 .signature-pad-container {
-    display: inline-block;
+    display: block;
+    width: 100%;  /* Make container full width of parent */
+    max-width: 100%; /* Ensure it doesn't overflow */
     margin: 1rem 0;
     padding: 1rem;
     border: 1px solid #ccc;
     border-radius: 4px;
     margin-bottom: 0.5rem;
+    box-sizing: border-box;
 }
 
 .signature-pad-wrapper {
-    display: inline-block;
+    position: relative;
+    width: 100%;
+    /* Set an aspect ratio using padding trick (2:1 aspect ratio here) */
+    padding-bottom: 50%;
     background-color: #f8f9fa;
 }
 
 .signature-pad-wrapper canvas {
-    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    touch-action: none; /* Prevents scrolling while signing on mobile */
 }
 
 .signature-pad-controls {
@@ -23,7 +34,7 @@
     border-top: 1px solid #dee2e6;
 }
 
-.clear-button {
+.signature-pad-clear-button {
     background: none;
     border: none;
     padding: 0;
@@ -33,11 +44,23 @@
     font: inherit;
 }
 
-.clear-button:hover {
+.signature-pad-clear-button:hover {
     color: #0a58ca;
     background: none;
 }
 
-.clear-button:focus {
+.signature-pad-clear-button:focus {
     outline: none;
+}
+
+/* Media query for mobile devices */
+@media (max-width: 576px) {
+    .signature-pad-container {
+        padding: 0.5rem;
+    }
+
+    /* Adjust aspect ratio for smaller screens if needed */
+    .signature-pad-wrapper {
+        padding-bottom: 60%; /* Slightly taller on mobile */
+    }
 }

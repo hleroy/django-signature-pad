@@ -1,27 +1,36 @@
-{# demo/templates/demo/document_list.html #}
 {% extends "base.html" %}
 
-{% load signature_filters %}
-
 {% block content %}
-  <h1>Documents</h1>
-  <a class="button" href="{% url 'document_create' %}">Add Document</a>
-  <table>
-    <thead>
-      <tr>
-        <th>Title</th>
-        <th>Signature</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for document in documents %}
-        <tr>
-          <td>{{ document.name }}</td>
-          <td>
-            {% if document.signature %}<img src="{{ document.signature|signature_base64 }}" alt="Signature" />{% endif %}
-          </td>
-        </tr>
-      {% endfor %}
-    </tbody>
-  </table>
+  <main>
+    <h1>Documents</h1>
+    <a role="button" href="{% url 'document_create' %}">Add Document</a>
+    {% if documents %}
+      <table>
+        <thead>
+          <tr>
+            <th>Title</th>
+            <th>Signature</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for document in documents %}
+            <tr>
+              <td>{{ document.name }}</td>
+              <td>
+                {% if document.signature %}<img src="{{ document.signature }}" alt="Signature" />{% endif %}
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      <form method="post" action="{% url 'clear_documents' %}">
+        {% csrf_token %}
+        <input type="submit"
+               value="Clear List"
+               onclick="return confirm('Are you sure you want to clear all documents?');" />
+      </form>
+    {% else %}
+      <p>No documents available.</p>
+    {% endif %}
+  </main>
 {% endblock content %}

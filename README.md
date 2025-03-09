@@ -1,6 +1,13 @@
 # Django Signature Pad
 
-A Django field for capturing signatures using [signature_pad](https://github.com/szimek/signature_pad).
+A Django field for capturing signatures using [szimek signature_pad](https://github.com/szimek/signature_pad).
+
+By design, signatures are stored as PNG images encoded as data URLs. This means:
+
+- Signatures can only be displayed as images after being saved
+- Signatures cannot be loaded back into the signature pad for editing
+- To modify a signature, users must draw a new one from scratch
+- This design decision was made to ensure signature integrity and simplify storage requirements.
 
 ![django_signature_pad.png](django_signature_pad.png)
 
@@ -11,6 +18,17 @@ A Django field for capturing signatures using [signature_pad](https://github.com
 - Using npm: `npm install signature_pad`
 - Using a CDN: `<script src="https://cdn.jsdelivr.net/npm/signature_pad@5.0.4/dist/signature_pad.umd.min.js"></script>`
 - Downloading directly from [GitHub releases](https://github.com/szimek/signature_pad/releases)
+
+## Security Features
+
+The SignaturePadField includes several security features:
+
+- Data URL format validation
+- Base64 encoding verification
+- PNG signature verification
+- Size limitation (default: 100KB)
+
+These safeguards help protect against malicious input and ensure data integrity.
 
 ## Installation
 
@@ -39,19 +57,7 @@ class Document(models.Model):
     signature = SignaturePadField(blank=True, null=True)
 ```
 
-3. Customize the widget size (optional, default to 400x200):
-
-```python
-from django import forms
-from signature_pad import SignaturePadWidget
-
-class MyForm(forms.Form):
-    signature = forms.JSONField(
-        widget=SignaturePadWidget(attrs={'width': 600, 'height': 300})
-    )
-```
-
-4. Use it in your form template:
+3. Use it in your form:
 
 ```html
 {{ form.media }}
@@ -61,31 +67,10 @@ class MyForm(forms.Form):
 </form>
 ```
 
-5. Render signature as base64-encoded SVG image URL in your template:
-
-The package includes a template filter for convenient signature rendering in templates:
+4. Render signature image:
 
 ```html
-{% load signature_filters %}
-
-<img src="{{ obj.signature|signature_base64 }}" alt="Signature" />
-```
-
-Note: the SVG rendering is not as smooth as `signature_pad` rendering. If you want the same rendering,
-render the signature data with `signature_pad`:
-
-```html
-{% if obj.signature %}
-<canvas id="signature-{{ obj.id }}" width="400" height="200"></canvas>
-<script>
-  document.addEventListener('DOMContentLoaded', function() {
-    const canvas = document.getElementById('signature-{{ obj.id }}');
-    const signaturePad = new SignaturePad(canvas);
-    signaturePad.fromData({{ obj.signature|safe }});
-    signaturePad.off(); // Disable drawing
-  });
-</script>
-{% endif %}
+<img src="{{ obj.signature }}" alt="Signature" />
 ```
 
 ## Example Project
@@ -118,26 +103,6 @@ python manage.py runserver
 ```
 
 Visit [http://127.0.0.1:8000/](http://127.0.0.1:8000/) to see the demo in action. You can also access the [admin interface](http://127.0.0.1:8000/admin) using the credentials you just created.
-
-## Knwown Issue
-
-When using a ModelForm, specifying the custom width and height attributes in `Meta` doesn't work. It works using an inline field declaration though. If you can help fixing this issue, let me know.
-
-```python
-class MyModelForm(forms.ModelForm):
-    # Works
-    signature = forms.JSONField(
-        widget=SignaturePadWidget(attrs={"width": 600, "height": 300})
-    )
-
-    class Meta:
-        model = SignatureModel
-        fields = ["signature"]
-        # Doesn't work
-        widgets = {
-            'signature': SignaturePadWidget(attrs={'width': 600, 'height': 300})
-        }
-```
 
 ## License
 
