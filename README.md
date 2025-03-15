@@ -1,6 +1,6 @@
 # Django Signature Pad
 
-A Django field for capturing signatures using [szimek signature_pad](https://github.com/szimek/signature_pad).
+Django model field and form widget for capturing signatures using [szimek signature_pad](https://github.com/szimek/signature_pad).
 
 By design, signatures are stored as PNG images encoded as data URLs. This means:
 
@@ -145,7 +145,7 @@ Fill in the superuser information when prompted. Then start the development serv
 python manage.py runserver
 ```
 
-Visit [http://127.0.0.1:8000/](http://127.0.0.1:8000/) to see the demo in action. You can also access the [admin interface](http://127.0.0.1:8000/admin) using the credentials you just created.
+Visit `http://127.0.0.1:8000/` to see the demo in action. You can also access the admin interface `http://127.0.0.1:8000/admin` using the credentials you just created.
 
 ## License
 

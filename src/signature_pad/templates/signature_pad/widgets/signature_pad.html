@@ -3,7 +3,9 @@
   <div class="signature-pad-wrapper">
     <canvas id="{{ widget.attrs.id }}-pad"
             {% for option_name, option_value in widget.signature_pad_options.items %} {% if option_value is not None %}data-signature-pad-{{ option_name|lower }}="{{ option_value }}"{% endif %}
-            {% endfor %}></canvas>
+            {% endfor %}
+            {% include "signature_pad/widgets/attrs.html" %}>
+    </canvas>
   </div>
   <div class="signature-pad-controls">
     <button type="button" class="signature-pad-clear-button">
