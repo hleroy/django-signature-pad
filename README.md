@@ -147,6 +147,12 @@ python manage.py runserver
 
 Visit `http://127.0.0.1:8000/` to see the demo in action. You can also access the admin interface `http://127.0.0.1:8000/admin` using the credentials you just created.
 
+If you want to acces the demo from your smartphone connected to the same (Wi-Fi) network as your computer, start the development server with `0.0.0.0:8000`:
+
+```bash
+python manage.py runserver 0.0.0.0:8000
+```
+
 ## License
 
 This project is licensed under the MIT License - see the LICENSE file for details.

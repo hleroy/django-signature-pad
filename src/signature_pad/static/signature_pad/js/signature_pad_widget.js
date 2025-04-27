@@ -46,6 +46,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Function to resize the canvas
     function resizeCanvas() {
+      // Save current signature as data
+      let signatureData = null;
+      if (signaturePads[canvas.id] && !signaturePads[canvas.id].isEmpty()) {
+        signatureData = signaturePads[canvas.id].toData();
+      }
+
       // Get the display size of the canvas from its parent wrapper
       const containerWidth = wrapper.clientWidth;
       const containerHeight = wrapper.clientHeight;
@@ -67,6 +73,11 @@ document.addEventListener("DOMContentLoaded", () => {
       } else {
         // Initialize a new signature pad with options
         signaturePads[canvas.id] = new SignaturePad(canvas, options);
+      }
+
+      // Restore the saved signature data if there was any
+      if (signatureData && signatureData.length > 0) {
+        signaturePads[canvas.id].fromData(signatureData);
       }
     }
 
