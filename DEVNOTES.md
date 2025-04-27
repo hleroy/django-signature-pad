@@ -14,6 +14,9 @@ pip install -r requirements.txt
 
 # Install django-signature-pad package in editable mode
 pip install -e .
+
+# Run tests
+pytest
 ```
 
 ## Building and deploying to PyPI
