@@ -13,6 +13,7 @@ authors = [
     {name = "Hervé Le Roy", email = "hleroy@hleroy.com"},
 ]
 classifiers = [
+    "Development Status :: 5 - Production/Stable",
     "Environment :: Web Environment",
     "Natural Language :: English",
     "Framework :: Django",
@@ -25,6 +26,7 @@ classifiers = [
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
     "Topic :: Utilities",
 ]
 dependencies = [
