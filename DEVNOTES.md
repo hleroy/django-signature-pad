@@ -19,6 +19,12 @@ pip install -e .
 pytest
 ```
 
+## Upgrading the virtual environment
+
+```bash
+pip list --outdated | awk 'NR>2 {print $1}' | xargs pip install --upgrade
+```
+
 ## Building and deploying to PyPI
 
 Install `hatch`:
