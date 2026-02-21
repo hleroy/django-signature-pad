@@ -18,6 +18,7 @@ classifiers = [
     "Natural Language :: English",
     "Framework :: Django",
     "Framework :: Django :: 5.0",
+    "Framework :: Django :: 6.0",
     "Intended Audience :: Developers",
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
