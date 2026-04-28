@@ -1,10 +1,31 @@
 import base64
+import binascii
 import re
 
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.forms import Widget
 from django.utils.translation import gettext_lazy as _
+
+
+def validate_png_data_url(value):
+    """Standalone Django validator: checks PNG data URL format, base64 integrity, and PNG magic bytes."""
+    if not value:
+        return
+
+    # \Z (not $) anchors at the true string end; $ also matches before a trailing \n.
+    if not re.match(r"^data:image/png;base64,[A-Za-z0-9+/]+={0,2}\Z", value):
+        raise ValidationError(_("Invalid PNG data URL format."))
+
+    try:
+        base64_data = value.split(",", 1)[1]
+        decoded_data = base64.b64decode(base64_data, validate=True)
+
+        if not decoded_data.startswith(b"\x89PNG\r\n\x1a\n"):
+            raise ValidationError(_("Invalid PNG data: missing PNG signature."))
+
+    except (ValueError, binascii.Error):
+        raise ValidationError(_("Invalid base64 data in the PNG data URL."))
 
 
 class SignaturePadWidget(Widget):
@@ -30,7 +51,6 @@ class SignaturePadWidget(Widget):
 
     template_name = "signature_pad/widgets/signature_pad.html"
 
-    # Signature pad options with default values
     signature_pad_options = {
         "dotSize": None,
         "minWidth": None,
@@ -49,7 +69,6 @@ class SignaturePadWidget(Widget):
         """
         self.signature_pad_options = self.signature_pad_options.copy()
 
-        # Extract signature pad options from kwargs
         for option_name in self.signature_pad_options.keys():
             if option_name in kwargs:
                 self.signature_pad_options[option_name] = kwargs.pop(option_name)
@@ -92,11 +111,14 @@ class SignaturePadField(models.TextField):
         1. Format Validation: Ensures the data follows the exact format
            'data:image/png;base64,' followed by valid base64 characters.
         2. Base64 Decoding Verification: Validates that the base64 data
-           is correctly formatted and can be decoded.
+           is correctly formatted and can be decoded (strict mode).
         3. PNG Header Verification: Confirms the decoded data begins with
            the standard PNG file signature (89 50 4E 47 0D 0A 1A 0A in hex).
         4. Size Limitation: Enforces a maximum size limit (default: 100KB)
            to prevent denial of service attacks through excessive data.
+
+    Validation runs at both the model level (via clean()) and the form level
+    (via the validators attached to the form field returned by formfield()).
 
     Raises:
         ValidationError: When any of the security validation checks fail.
@@ -111,7 +133,7 @@ class SignaturePadField(models.TextField):
             *args: Variable length argument list.
             **kwargs: Arbitrary keyword arguments.
         """
-        self.max_size_kb = kwargs.pop("max_size_kb", 100)  # Default max size: 100KB
+        self.max_size_kb = kwargs.pop("max_size_kb", 100)
         super().__init__(*args, **kwargs)
 
     def formfield(self, **kwargs):
@@ -122,55 +144,36 @@ class SignaturePadField(models.TextField):
 
         Returns:
             django.forms.Field: A form field instance configured with
-                SignaturePadWidget as the widget.
+                SignaturePadWidget as the widget and PNG validators attached.
         """
         kwargs["widget"] = SignaturePadWidget()
-        return super().formfield(**kwargs)
+        field = super().formfield(**kwargs)
+        field.validators.append(validate_png_data_url)
+        field.validators.append(self._validate_size)
+        return field
 
-    def validate_png_data_url(self, value):
-        """Validate that the value is a properly formatted PNG data URL.
+    def _validate_size(self, value):
+        """Raise ValidationError if the decoded PNG exceeds max_size_kb.
 
-        Performs multiple security checks to ensure the data is safe:
-        1. Verifies the correct data URL format for PNG
-        2. Validates the base64 encoding is properly formatted
-        3. Confirms the presence of the PNG file signature
-        4. Enforces size limitations
-
-        Args:
-            value (str): The PNG data URL to validate.
-
-        Raises:
-            ValidationError: If any validation check fails, with a specific
-                error message describing the issue.
+        Silently skips values that are not valid data URLs; those are reported
+        by validate_png_data_url, which runs alongside this validator. Django's
+        Field.run_validators collects ValidationError and continues, so this
+        validator must tolerate malformed input (e.g. no comma) rather than
+        crash with IndexError.
         """
         if not value:
             return
-
-        # Check for correct data URL format for PNG
-        if not re.match(r"^data:image/png;base64,[A-Za-z0-9+/]+=*$", value):
-            raise ValidationError(_("Invalid PNG data URL format."))
-
         try:
-            # Extract the base64 data part
-            header, base64_data = value.split(",", 1)
-
-            # Validate it's proper base64
+            base64_data = value.split(",", 1)[1]
             decoded_data = base64.b64decode(base64_data)
-
-            # Check for PNG signature in the decoded data
-            if not decoded_data.startswith(b"\x89PNG\r\n\x1a\n"):
-                raise ValidationError(_("Invalid PNG data: missing PNG signature."))
-
-            # Check size
-            kb_size = len(decoded_data) / 1024
-            if kb_size > self.max_size_kb:
-                raise ValidationError(
-                    _("Signature image is too large (%(size).2f KB). Maximum allowed size is %(max_size)d KB."),
-                    params={"size": kb_size, "max_size": self.max_size_kb},
-                )
-
-        except (ValueError, base64.binascii.Error):
-            raise ValidationError(_("Invalid base64 data in the PNG data URL."))
+        except (ValueError, binascii.Error, IndexError):
+            return
+        kb_size = len(decoded_data) / 1024
+        if kb_size > self.max_size_kb:
+            raise ValidationError(
+                _("Signature image is too large (%(size).2f KB). Maximum allowed size is %(max_size)d KB."),
+                params={"size": kb_size, "max_size": self.max_size_kb},
+            )
 
     def clean(self, value, model_instance):
         """Validate the signature data before saving to the database.
@@ -186,5 +189,6 @@ class SignaturePadField(models.TextField):
             ValidationError: If any validation check fails.
         """
         value = super().clean(value, model_instance)
-        self.validate_png_data_url(value)
+        validate_png_data_url(value)
+        self._validate_size(value)
         return value

@@ -5,9 +5,9 @@ import base64
 from django.core.exceptions import ValidationError
 from django.test import TestCase
 
-from signature_pad.fields import SignaturePadField, SignaturePadWidget
+from signature_pad.fields import SignaturePadField, SignaturePadWidget, validate_png_data_url
 
-from .forms import SignatureModelForm
+from .forms import SignatureModelForm, SignaturePlainForm
 from .models import SignatureModel
 
 
@@ -45,36 +45,27 @@ class SignaturePadWidgetTests(TestCase):
         )
 
 
-class SignaturePadFieldSecurityTests(TestCase):
+class ValidatePNGDataURLTests(TestCase):
+    """Tests for the standalone validate_png_data_url validator."""
+
     def setUp(self):
-        """Set up test data for signature validation."""
         # Valid minimal PNG (1x1 transparent pixel) as base64
         self.valid_png_data = (
             "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+P+/HgAFeAJdijKHqwAAAABJRU5ErkJggg=="
         )
         self.valid_data_url = f"data:image/png;base64,{self.valid_png_data}"
 
-        # Create a field instance for testing
-        self.field = SignaturePadField(max_size_kb=100)
-
-        # Mock model instance for clean method tests
-        self.model_instance = SignatureModel()
-
-    def test_empty_value_validation(self):
-        """Test that empty values pass validation."""
-        # Empty string should be valid
-        self.field.validate_png_data_url("")
-
-        # None should be valid
-        self.field.validate_png_data_url(None)
+    def test_empty_value_is_allowed(self):
+        """Empty values pass validation (required-ness is enforced elsewhere)."""
+        validate_png_data_url("")
+        validate_png_data_url(None)
 
     def test_valid_png_data_url(self):
-        """Test validation of a correctly formatted PNG data URL."""
-        # This should not raise an exception
-        self.field.validate_png_data_url(self.valid_data_url)
+        """A correctly formatted PNG data URL passes without error."""
+        validate_png_data_url(self.valid_data_url)
 
     def test_invalid_data_url_format(self):
-        """Test rejection of incorrectly formatted data URLs."""
+        """Incorrectly formatted data URLs are rejected."""
         invalid_formats = [
             # Wrong mime type
             f"data:image/jpeg;base64,{self.valid_png_data}",
@@ -89,81 +80,132 @@ class SignaturePadFieldSecurityTests(TestCase):
         ]
 
         for invalid_format in invalid_formats:
-            with self.assertRaises(ValidationError):
-                self.field.validate_png_data_url(invalid_format)
+            with self.subTest(value=invalid_format):
+                with self.assertRaises(ValidationError):
+                    validate_png_data_url(invalid_format)
 
-    def test_invalid_base64_data(self):
-        """Test rejection of invalid base64 data."""
-        # Data with invalid base64 padding
-        invalid_base64 = "data:image/png;base64,SGVsbG8gV29ybGQ="  # "Hello World" without proper padding
-
-        with self.assertRaises(ValidationError):
-            self.field.validate_png_data_url(invalid_base64)
-
-    def test_non_png_data(self):
-        """Test rejection of data that doesn't have a PNG signature."""
-        # Base64 encoded text, not a PNG
+    def test_non_png_data_rejected(self):
+        """Data with a valid base64 encoding but no PNG signature is rejected."""
         text_base64 = base64.b64encode(b"This is not a PNG file").decode("ascii")
         fake_png_url = f"data:image/png;base64,{text_base64}"
 
         with self.assertRaises(ValidationError):
-            self.field.validate_png_data_url(fake_png_url)
+            validate_png_data_url(fake_png_url)
 
-    def test_size_limit(self):
-        """Test enforcement of size limits."""
-        # Create a field with a very small size limit
-        small_field = SignaturePadField(max_size_kb=0.01)  # 10 bytes limit
+    def test_trailing_newline_rejected(self):
+        """Trailing newline is rejected (\\Z anchor, not $ which allows a trailing \\n)."""
+        with self.assertRaises(ValidationError):
+            validate_png_data_url(self.valid_data_url + "\n")
 
-        # Even our minimal PNG should exceed this tiny limit
-        with self.assertRaises(ValidationError) as cm:
-            small_field.validate_png_data_url(self.valid_data_url)
+    def test_excessive_base64_padding_rejected(self):
+        """More than two padding characters (===) are rejected by the regex."""
+        stripped = self.valid_png_data.rstrip("=")
+        with self.assertRaises(ValidationError):
+            validate_png_data_url(f"data:image/png;base64,{stripped}===")
 
-        # Verify the error message mentions the size
-        self.assertIn("too large", str(cm.exception))
+    def test_strict_base64_decode_rejects_bad_padding(self):
+        """base64.b64decode(validate=True) rejects data with incorrect padding length."""
+        # 15-char base64 string — length is not a multiple of 4, so padding is wrong.
+        # The regex allows zero padding chars, but strict decode requires a valid length.
+        unpadded = "SGVsbG8gV29ybGQ"  # "Hello World" without the trailing =
+        with self.assertRaises(ValidationError):
+            validate_png_data_url(f"data:image/png;base64,{unpadded}")
+
+    def test_standalone_callable(self):
+        """validate_png_data_url is importable and callable without a field instance."""
+        from signature_pad import validate_png_data_url as imported_validator
+
+        # Should raise for invalid input
+        with self.assertRaises(ValidationError):
+            imported_validator("not-a-png")
+
+        # Should pass for valid input
+        imported_validator(self.valid_data_url)
+
+
+class SignaturePadFieldSecurityTests(TestCase):
+    def setUp(self):
+        self.valid_png_data = (
+            "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+P+/HgAFeAJdijKHqwAAAABJRU5ErkJggg=="
+        )
+        self.valid_data_url = f"data:image/png;base64,{self.valid_png_data}"
+        self.field = SignaturePadField(max_size_kb=100)
+        self.model_instance = SignatureModel()
 
     def test_custom_max_size(self):
-        """Test field initialization with custom max_size_kb."""
+        """Field initialises with the given max_size_kb; default is 100."""
         custom_field = SignaturePadField(max_size_kb=200)
         self.assertEqual(custom_field.max_size_kb, 200)
 
-        # Default should be 100KB
         default_field = SignaturePadField()
         self.assertEqual(default_field.max_size_kb, 100)
 
-    def test_clean_method_calls_validation(self):
-        """Test that the clean method calls validate_png_data_url."""
-        # Create a field with a spy on validate_png_data_url
-        original_validate = SignaturePadField.validate_png_data_url
-        validation_called = False
+    def test_size_limit_enforced_via_clean(self):
+        """clean() raises ValidationError when the decoded image exceeds max_size_kb."""
+        small_field = SignaturePadField(max_size_kb=0.01)  # ~10 bytes — tiny limit
 
-        def spy_validate(self, value):
-            nonlocal validation_called
-            validation_called = True
-            return original_validate(self, value)
+        with self.assertRaises(ValidationError) as cm:
+            small_field.clean(self.valid_data_url, self.model_instance)
 
-        try:
-            # Replace with spy function
-            SignaturePadField.validate_png_data_url = spy_validate
+        self.assertIn("too large", str(cm.exception))
 
-            # Call clean
-            field = SignaturePadField()
-            field.clean(self.valid_data_url, self.model_instance)
+    def test_clean_validates_format(self):
+        """clean() propagates format errors from validate_png_data_url."""
+        with self.assertRaises(ValidationError):
+            self.field.clean("data:image/png;base64,notvalidbase64!!!", self.model_instance)
 
-            # Verify validation was called
-            self.assertTrue(validation_called)
+    def test_formfield_has_png_validators(self):
+        """formfield() attaches validate_png_data_url to the returned form field."""
+        form_field = self.field.formfield()
+        self.assertIn(validate_png_data_url, form_field.validators)
 
-        finally:
-            # Restore original function
-            SignaturePadField.validate_png_data_url = original_validate
+    def test_formfield_has_size_validator(self):
+        """formfield() attaches the size validator to the returned form field."""
+        form_field = self.field.formfield()
+        validator_names = [getattr(v, "__name__", None) or type(v).__name__ for v in form_field.validators]
+        self.assertIn("_validate_size", validator_names)
 
-    def test_form_validation(self):
-        """Test validation through form processing."""
-        # Create a form with valid data
+    def test_modelform_validation(self):
+        """Validation works through ModelForm processing."""
         form = SignatureModelForm(data={"signature": self.valid_data_url})
         self.assertTrue(form.is_valid())
 
-        # Create a form with invalid data
-        invalid_data = "data:image/png;base64,invalid"
-        form = SignatureModelForm(data={"signature": invalid_data})
+        form = SignatureModelForm(data={"signature": "data:image/png;base64,invalid"})
         self.assertFalse(form.is_valid())
         self.assertIn("signature", form.errors)
+
+    def test_plain_form_validation(self):
+        """Validation fires at the form layer even without a ModelForm.
+
+        This exercises the validators added in formfield() and ensures the HIGH
+        gap (no form-level validation for plain Forms) is closed.
+        """
+        form = SignaturePlainForm(data={"signature": self.valid_data_url})
+        self.assertTrue(form.is_valid())
+
+        form = SignaturePlainForm(data={"signature": "data:image/png;base64,bm90YXBuZw=="})
+        self.assertFalse(form.is_valid())
+        self.assertIn("signature", form.errors)
+
+    def test_form_with_no_comma_value_does_not_crash(self):
+        """A submitted value without a comma must not raise IndexError.
+
+        Django's run_validators collects ValidationError and keeps going, so
+        the size validator runs even after the format validator rejects the
+        input. Splitting on ',' would otherwise raise IndexError and bubble
+        up as a 500.
+        """
+        form = SignaturePlainForm(data={"signature": "no-comma-here"})
+        self.assertFalse(form.is_valid())
+        self.assertIn("signature", form.errors)
+
+    def test_plain_form_size_limit(self):
+        """Size validator on the form field rejects oversized data via plain Form."""
+
+        class TinyForm(SignaturePlainForm):
+            signature = SignaturePadField(max_size_kb=0.01).formfield()
+
+        form = TinyForm(data={"signature": self.valid_data_url})
+        self.assertFalse(form.is_valid())
+        self.assertIn("signature", form.errors)
+        self.assertTrue(any("too large" in e for e in form.errors["signature"]))
