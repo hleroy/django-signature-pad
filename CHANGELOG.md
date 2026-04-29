@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- `CLAUDE.md` documenting project overview, software stack, security practices,
+  publishing workflow, and mandatory commit rules including changelog updates
+
 ### Changed
 
 - Automate GitHub Release creation as a third workflow job (`release`) that
