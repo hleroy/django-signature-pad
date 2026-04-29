@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Automate GitHub Release creation as a third workflow job (`release`) that
+  runs after a successful PyPI publish; release notes are extracted from the
+  matching `CHANGELOG.md` section
+- Update DEVNOTES to document the full three-job release sequence
+
 ## [0.9.0] - 2026-04-29
 
 ### Security

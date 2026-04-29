@@ -26,3 +26,38 @@ jobs:
 
       - name: Publish to PyPI
         uses: pypa/gh-action-pypi-publish@cef221092ed1bacb1cc03d23a2d87d1d172e277b  # release/v1
+
+  release:
+    needs: publish
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5  # v4
+
+      - name: Extract release notes from CHANGELOG.md
+        run: |
+          python3 << 'PYEOF'
+          import re, sys, os
+          version = os.environ["VERSION"].lstrip("v")
+          with open("CHANGELOG.md") as f:
+              content = f.read()
+          pattern = rf"## \[{re.escape(version)}\][^\n]*\n(.*?)(?=\n## \[|\Z)"
+          match = re.search(pattern, content, re.DOTALL)
+          if not match:
+              print(f"Version {version} not found in CHANGELOG.md", file=sys.stderr)
+              sys.exit(1)
+          with open("release_notes.md", "w") as out:
+              out.write(match.group(1).strip())
+          PYEOF
+        env:
+          VERSION: ${{ github.ref_name }}
+
+      - name: Create GitHub Release
+        run: |
+          gh release create "${{ github.ref_name }}" \
+            --title "${{ github.ref_name }}" \
+            --notes-file release_notes.md
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
