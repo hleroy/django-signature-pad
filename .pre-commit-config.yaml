@@ -42,13 +42,13 @@ repos:
     hooks:
       - id: pytest
         name: pytest
-        entry: venv/bin/pytest
-        language: script
+        entry: uv run pytest
+        language: system
         pass_filenames: false
         always_run: true
 
 # sets up .pre-commit-ci.yaml to ensure pre-commit dependencies stay up to date
 ci:
-  autoupdate_schedule: weekly
+  autoupdate_schedule: quarterly
   skip: []
   submodules: false

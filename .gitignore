@@ -2,6 +2,5 @@
 *.egg-info
 __pycache__
 dist
-
-venv
+.venv
 example_project/db.sqlite3

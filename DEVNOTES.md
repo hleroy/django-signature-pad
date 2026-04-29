@@ -2,59 +2,39 @@
 
 ## Development and testing
 
-For development and testing, setup a virtual environment with the required dependencies:
+This project uses [uv](https://docs.astral.sh/uv/) for dependency and
+environment management. Install uv first:
+<https://docs.astral.sh/uv/getting-started/installation/>.
 
 ```bash
-# Create and activate virtual environment
-python -m venv venv
-source venv/bin/activate
-
-# Install requirements
-pip install -r requirements.txt
-
-# Install django-signature-pad package in editable mode
-pip install -e .
-
-# Run tests
-pytest
+# Install dependencies (creates .venv automatically) and run tests
+uv sync --group dev
+uv run pytest
 ```
 
-## Upgrading the virtual environment
+## Upgrading dependencies
 
 ```bash
-pip list --outdated | awk 'NR>2 {print $1}' | xargs pip install --upgrade
+# Upgrade locked versions in uv.lock
+uv lock --upgrade
+
+# Apply the new lock to the local environment
+uv sync --group dev
 ```
 
-## Building and deploying to PyPI
+## Publishing to PyPI
 
-Install `hatch`:
+Releases are automated via the `Publish` GitHub Actions workflow using PyPI
+Trusted Publishers (OIDC). To cut a release:
+
+1. Bump the `__version__` in `src/signature_pad/__about__.py`.
+2. Commit and tag: `git tag v0.x.y && git push --tags`.
+3. The `Publish` workflow runs the test matrix; if it succeeds, the `release`
+   environment requires manual approval, then the package is built with
+   `uv build` and uploaded to PyPI.
+
+To build locally for inspection:
 
 ```bash
- pipx install hatch
+uv build
 ```
-
-### Building the Package
-
-`hatch build`
-
-This will generate distribution archives in the `dist/` directory.
-
-### Uploading to TestPyPI
-
-Test Your Package: Before uploading to the official PyPI, you can test your package on TestPyPI.
-
-`hatch publish -r test`
-
-Install your package from TestPyPI to ensure everything works as expected:
-
-`pip install --index-url https://test.pypi.org/simple/ django-signature-pad`
-
-### Uploading to PyPI
-
-Upload to PyPI: If the test succeeds, upload your package to PyPI.
-
-`hatch publish`
-
-## Notes
-
-- Versioning: Update the `version` parameter in `pyproject.toml` and `__init__.py`

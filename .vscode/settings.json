@@ -5,7 +5,7 @@
   "files.trimFinalNewlines": true,
   "editor.rulers": [119],
   "editor.formatOnSave": true,
-  "python.defaultInterpreterPath": "venv/bin/python",
+  "python.defaultInterpreterPath": ".venv/bin/python",
   "python.analysis.indexing": true,
   "python.analysis.autoImportCompletions": true,
   "python.analysis.packageIndexDepths": [

@@ -1,5 +1,5 @@
 [build-system]
-requires = ["hatchling"]
+requires = ["hatchling>=1.29.0,<2"]
 build-backend = "hatchling.build"
 
 [project]
@@ -32,6 +32,18 @@ classifiers = [
 ]
 dependencies = [
     "Django>=5.0",
+]
+
+[dependency-groups]
+dev = [
+    "coverage>=7.6",
+    "django-coverage-plugin>=3.1",
+    "djlint>=1.36",
+    "pre-commit>=4.0",
+    "pytest>=9.0",
+    "pytest-django>=4.9",
+    "pytest-sugar>=1.0",
+    "ruff>=0.8",
 ]
 
 [project.urls]
