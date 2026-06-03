@@ -7,10 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.9.1] - 2026-06-03
+
 ### Added
 
 - `CLAUDE.md` documenting project overview, software stack, security practices,
   publishing workflow, and mandatory commit rules including changelog updates
+- Publish-pipeline guard that aborts the release if the built wheel does not
+  contain the `signature_pad` package code, preventing another empty-wheel
+  upload to PyPI
 
 ### Changed
 
@@ -18,6 +23,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   runs after a successful PyPI publish; release notes are extracted from the
   matching `CHANGELOG.md` section
 - Update DEVNOTES to document the full three-job release sequence
+
+### Fixed
+
+- Build a non-empty wheel. The `packages` setting lived under the global
+  `[tool.hatch.build]` table, which made hatchling strip the `src/` prefix in
+  the sdist as well. When `uv build` then built the wheel from that sdist, the
+  configured `src/signature_pad` path no longer existed, so the 0.9.0 wheel
+  shipped with metadata only and no Python modules (`ModuleNotFoundError` on
+  install). Scope the setting to `[tool.hatch.build.targets.wheel]` so the
+  sdist keeps the `src/` layout and the wheel-from-sdist build finds the
+  package.
 
 ## [0.9.0] - 2026-04-29
 
@@ -62,7 +78,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Initial tracked release.
 
-[Unreleased]: https://github.com/hleroy/django-signature-pad/compare/v0.9.0...HEAD
+[Unreleased]: https://github.com/hleroy/django-signature-pad/compare/v0.9.1...HEAD
+[0.9.1]: https://github.com/hleroy/django-signature-pad/compare/v0.9.0...v0.9.1
 [0.9.0]: https://github.com/hleroy/django-signature-pad/compare/v0.8.0...v0.9.0
 [0.8.0]: https://github.com/hleroy/django-signature-pad/compare/v0.7.0...v0.8.0
 [0.7.0]: https://github.com/hleroy/django-signature-pad/releases/tag/v0.7.0

@@ -24,6 +24,19 @@ jobs:
       - name: Build package
         run: uv build
 
+      - name: Verify wheel is not empty
+        run: |
+          python3 << 'PYEOF'
+          import glob, sys, zipfile
+          wheels = glob.glob("dist/*.whl")
+          if not wheels:
+              sys.exit("No wheel found in dist/")
+          names = zipfile.ZipFile(wheels[0]).namelist()
+          if "signature_pad/__init__.py" not in names:
+              sys.exit(f"Wheel {wheels[0]} is missing signature_pad package code; aborting publish")
+          print(f"OK: {wheels[0]} contains the signature_pad package")
+          PYEOF
+
       - name: Publish to PyPI
         uses: pypa/gh-action-pypi-publish@cef221092ed1bacb1cc03d23a2d87d1d172e277b  # release/v1
 
