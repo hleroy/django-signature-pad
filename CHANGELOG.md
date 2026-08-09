@@ -7,6 +7,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Test against Django 6.1 and Python 3.14, both of which were missing from the
+  CI matrix
+
+### Changed
+
+- **Breaking:** require Django 5.2 or later. Django 5.0 (end of life April
+  2025) and 5.1 (end of life December 2025) are no longer supported or tested;
+  the CI matrix now covers only Django versions that upstream still maintains
+  (5.2 LTS, 6.0, 6.1)
+- Declare `Framework :: Django :: 5.2` and `:: 6.1` classifiers, which were
+  missing even though those versions were supported
+- Bump the `django-upgrade` pre-commit target to 5.2 to match the new floor
+
+### Fixed
+
+- Set the Ruff `target-version` to `py310` so that it matches
+  `requires-python`; the previous `py312` target allowed pyupgrade to rewrite
+  code to syntax unavailable on the oldest supported interpreter
+
 ## [0.9.1] - 2026-06-03
 
 ### Added

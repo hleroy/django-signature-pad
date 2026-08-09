@@ -17,8 +17,9 @@ classifiers = [
     "Environment :: Web Environment",
     "Natural Language :: English",
     "Framework :: Django",
-    "Framework :: Django :: 5.0",
+    "Framework :: Django :: 5.2",
     "Framework :: Django :: 6.0",
+    "Framework :: Django :: 6.1",
     "Intended Audience :: Developers",
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
@@ -28,10 +29,11 @@ classifiers = [
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
     "Topic :: Utilities",
 ]
 dependencies = [
-    "Django>=5.0",
+    "Django>=5.2",
 ]
 
 [dependency-groups]
@@ -67,7 +69,9 @@ addopts = "-v"
 
 [tool.ruff]
 line-length = 119
-target-version = "py312"
+# Must match requires-python (>=3.10): a higher target lets pyupgrade rewrite
+# code to syntax unavailable on the oldest supported interpreter.
+target-version = "py310"
 
 [tool.ruff.lint]
 select = [
