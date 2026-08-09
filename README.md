@@ -116,6 +116,18 @@ Available customization options:
     backgroundColor: Canvas background color (CSS color string)
     penColor: Signature line color (CSS color string)
 
+## Content Security Policy
+
+The widget renders no inline JavaScript and no inline CSS: its assets are served as static files and the per-widget options are passed to the browser through `data-` attributes. It therefore works under a strict policy such as `script-src 'self'` without `'unsafe-inline'`.
+
+If your policy uses a nonce instead (Django 6.0+ `SECURE_CSP` with `CSP.NONCE`), note that the `<script>` and `<link>` tags emitted by `{{ form.media }}` carry no nonce, so the browser blocks them. On Django 6.1+, render the media through the built-in `csp_nonce_attr` tag:
+
+```html
+{% csp_nonce_attr form.media %}
+```
+
+This requires `django.template.context_processors.csp` in the `context_processors` option of your template engine. The `signature_pad` library itself is loaded by your own template or bundler, so it has to satisfy the policy as well.
+
 ## Example Project
 
 Want to see it in action? Try the example project:
