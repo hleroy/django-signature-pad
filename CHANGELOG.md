@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- README section on Content Security Policy: the widget ships no inline
+  JavaScript or CSS and works under `script-src 'self'`, and nonce-based
+  policies should render the assets with `{% csp_nonce_attr form.media %}`
+  (Django 6.1+) rather than `{{ form.media }}`
+
 ## [0.10.0] - 2026-08-09
 
 ### Added
