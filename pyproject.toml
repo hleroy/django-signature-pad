@@ -7,7 +7,7 @@ name = "django-signature-pad"
 dynamic = ["version"]
 description = "A Django field for capturing signatures using signature_pad"
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = ">=3.11"
 license = {file = "LICENSE"}
 authors = [
     {name = "Hervé Le Roy", email = "hleroy@hleroy.com"},
@@ -25,7 +25,6 @@ classifiers = [
     "Operating System :: OS Independent",
     "Programming Language :: Python",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
@@ -69,9 +68,9 @@ addopts = "-v"
 
 [tool.ruff]
 line-length = 119
-# Must match requires-python (>=3.10): a higher target lets pyupgrade rewrite
+# Must match requires-python (>=3.11): a higher target lets pyupgrade rewrite
 # code to syntax unavailable on the oldest supported interpreter.
-target-version = "py310"
+target-version = "py311"
 
 [tool.ruff.lint]
 select = [

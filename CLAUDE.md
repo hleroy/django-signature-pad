@@ -7,7 +7,7 @@ form widget, and standalone validator for capturing handwritten signatures.
 Signatures are stored as base64-encoded PNG data URLs. The JavaScript side is
 powered by the [signature_pad](https://github.com/szimek/signature_pad) library.
 
-The package targets Django 5.2–6.1 and Python 3.10–3.14. It is published on
+The package targets Django 5.2–6.1 and Python 3.11–3.14. It is published on
 PyPI under the MIT licence.
 
 ## Repository layout
@@ -28,7 +28,7 @@ example_project/        # runnable Django project for manual testing
 
 | Concern                     | Tool                                                          |
 |-----------------------------|---------------------------------------------------------------|
-| Runtime                     | Python 3.10–3.14, Django 5.2–6.1                             |
+| Runtime                     | Python 3.11–3.14, Django 5.2–6.1                             |
 | Dependency / env management | [uv](https://docs.astral.sh/uv/)                             |
 | Build backend               | hatchling ≥1.29,<2                                           |
 | Linter                      | Ruff                                                          |
@@ -118,7 +118,7 @@ push tag v* → test (matrix) → publish (PyPI, manual approval) → release (G
 ### Job details
 
 - **test**: reuses `test.yml`; runs the full matrix
-  (Python 3.10–3.14 × Django 5.2–6.1).
+  (Python 3.11–3.14 × Django 5.2–6.1).
 - **publish**: runs in the `release` environment (requires manual approval in
   the GitHub UI); builds with `uv build`; uploads to PyPI via OIDC — no API
   token stored anywhere.
