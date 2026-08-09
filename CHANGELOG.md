@@ -7,6 +7,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.10.0] - 2026-08-09
+
+### Added
+
+- Test against Django 6.1 and Python 3.14, both of which were missing from the
+  CI matrix
+
+### Changed
+
+- **Breaking:** require Django 5.2 or later. Django 5.0 (end of life April
+  2025) and 5.1 (end of life December 2025) are no longer supported or tested;
+  the CI matrix now covers only Django versions that upstream still maintains
+  (5.2 LTS, 6.0, 6.1)
+- **Breaking:** require Python 3.11 or later. Python 3.10 reaches end of life
+  in October 2026 and has been dropped ahead of that date
+- Declare `Framework :: Django :: 5.2` and `:: 6.1` classifiers, which were
+  missing even though those versions were supported
+- Bump the `django-upgrade` pre-commit hook to 1.31.1 and its target to 5.2
+  to match the new floor; the 5.2 target is only accepted from
+  django-upgrade 1.23.0 onwards
+
+### Fixed
+
+- Set the Ruff `target-version` to `py311` so that it matches
+  `requires-python`; the previous `py312` target allowed pyupgrade to rewrite
+  code to syntax unavailable on the oldest supported interpreter
+
 ## [0.9.1] - 2026-06-03
 
 ### Added
@@ -78,7 +105,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Initial tracked release.
 
-[Unreleased]: https://github.com/hleroy/django-signature-pad/compare/v0.9.1...HEAD
+[Unreleased]: https://github.com/hleroy/django-signature-pad/compare/v0.10.0...HEAD
+[0.10.0]: https://github.com/hleroy/django-signature-pad/compare/v0.9.1...v0.10.0
 [0.9.1]: https://github.com/hleroy/django-signature-pad/compare/v0.9.0...v0.9.1
 [0.9.0]: https://github.com/hleroy/django-signature-pad/compare/v0.8.0...v0.9.0
 [0.8.0]: https://github.com/hleroy/django-signature-pad/compare/v0.7.0...v0.8.0
