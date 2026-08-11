@@ -14,6 +14,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   policies should render the assets with `{% csp_nonce_attr form.media %}`
   (Django 6.1+) rather than `{{ form.media }}`
 
+### Changed
+
+- Bump the `signature_pad` CDN reference from 5.0.4 to 5.1.4 in the example
+  project (template and admin `Media`) and in the README installation notes;
+  the SRI hash in `base.html` was regenerated for the new file
+
 ## [0.10.0] - 2026-08-09
 
 ### Added
