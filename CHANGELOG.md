@@ -40,6 +40,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Set the Ruff `target-version` to `py311` so that it matches
   `requires-python`; the previous `py312` target allowed pyupgrade to rewrite
   code to syntax unavailable on the oldest supported interpreter
+- Bump `pypa/gh-action-pypi-publish` to v1.14.2, which ships Twine 7 and can
+  therefore read the `Metadata-Version: 2.5` that hatchling 1.29+ writes; the
+  previously pinned revision aborted the upload with
+  `InvalidDistribution: '2.5' is not a valid metadata version`
 
 ## [0.9.1] - 2026-06-03
 
