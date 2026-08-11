@@ -17,6 +17,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   a fix to the workflow itself previously required moving the tag; dispatching
   from `main` publishes the tagged source using the branch's workflow instead
 
+### Changed
+
+- Exempt Dependabot pull requests from the mandatory-changelog rule in
+  `CLAUDE.md`, since the bot cannot edit `CHANGELOG.md` and the weekly grouped
+  bump would otherwise breach the rule every week; grouped action bumps are
+  now recorded as a single bullet when cutting a release. Also require action
+  pin comments to carry the full version (`# v7.0.1`) rather than a bare major
+  (`# v4`), which Dependabot leaves stale when it updates the SHA
+
 ### Fixed
 
 - Correct the `actions/checkout` pin comments, which still read `# v4` after

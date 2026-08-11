@@ -96,6 +96,11 @@ All third-party GitHub Actions are pinned to a full commit SHA (not a mutable
 tag) to prevent supply-chain attacks. When updating an action, replace the SHA
 and add a comment with the human-readable tag/version.
 
+Write that comment as the **full** version (`# v7.0.1`), never a bare major
+(`# v4`). Dependabot rewrites a full-version comment along with the SHA but
+leaves a bare major untouched, which silently turns the comment into a lie
+about what the pin contains.
+
 ### CDN resources
 
 The example project loads `signature_pad` from a CDN with Subresource Integrity
@@ -158,8 +163,10 @@ next version. Note that on dispatch the `test` job runs `main`, not the tag.
 
 ### Every commit
 
-> **IMPORTANT: updating `CHANGELOG.md` is mandatory for every single commit,
-> no exceptions. Never create a commit without a corresponding changelog entry.**
+> **IMPORTANT: updating `CHANGELOG.md` is mandatory for every commit authored
+> in this repository. Never create a commit without a corresponding changelog
+> entry.** The sole exception is automated dependency pull requests — see
+> [Dependabot pull requests](#dependabot-pull-requests) below.
 
 Always update `CHANGELOG.md` as part of the commit:
 
@@ -173,6 +180,32 @@ Always update `CHANGELOG.md` as part of the commit:
   section above it, and update the comparison links at the bottom of the file.
 
 The changelog format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
+
+### Dependabot pull requests
+
+Dependabot opens a grouped `github-actions` bump weekly and cannot edit
+`CHANGELOG.md`. Merge those pull requests as they are; do not hand-write a
+changelog entry per bump, and do not push changelog-only commits onto a
+Dependabot branch (a rebase would discard them).
+
+Instead, record them once at release time: when cutting a release, list what
+was merged since the previous tag and fold it into a single bullet under
+`Changed`.
+
+```bash
+gh pr list --state merged --author app/dependabot --search "merged:>=$(git log -1 --format=%aI v<previous-version>)"
+```
+
+A bullet such as *"Update pinned GitHub Actions (`actions/checkout` 4 → 7,
+`astral-sh/setup-uv` 6 → 9)"* is enough — readers care about which actions
+moved, not about each weekly PR.
+
+When reviewing one of these PRs, verify that each new SHA really is the tag
+claimed in its trailing comment before merging:
+
+```bash
+gh api repos/<owner>/<action>/git/refs/tags/<tag> --jq .object.sha
+```
 
 ### Commit message format
 
