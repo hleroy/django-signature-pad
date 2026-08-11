@@ -139,6 +139,21 @@ push tag v* → test (matrix) → publish (PyPI, manual approval) → release (G
    ```
 4. Approve the `publish` step in the GitHub Actions UI when prompted.
 
+### If a publish run fails
+
+A tag push runs the workflow file **as it exists at the tagged commit**, so a
+fix to `publish.yml` itself does not help a re-run of that tag. Do not move the
+tag. Land the fix on `main` and re-trigger with the `workflow_dispatch` entry
+point instead, passing the existing tag:
+
+```bash
+gh workflow run publish.yml --ref main -f tag=v<version>
+```
+
+That runs `main`'s workflow while building and releasing the tagged source, so
+the tag stays on the `release: <version>` commit and the CI fix belongs to the
+next version. Note that on dispatch the `test` job runs `main`, not the tag.
+
 ## Commit rules
 
 ### Every commit

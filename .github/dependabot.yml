@@ -1,0 +1,18 @@
+version: 2
+
+updates:
+  # Keep the SHA-pinned actions fresh. Pinning to a commit protects against a
+  # mutable tag being repointed, but it also freezes the action's bundled
+  # tooling: a stale pin is how the v0.10.0 publish failed, with the action's
+  # Twine too old to read the Metadata-Version 2.5 that hatchling 1.29+ writes.
+  # Dependabot rewrites both the SHA and its trailing version comment.
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    commit-message:
+      prefix: ci
+    groups:
+      actions:
+        patterns:
+          - "*"

@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Dependabot configuration for the `github-actions` ecosystem (weekly, grouped
+  into a single PR) so that SHA-pinned actions stay current. A frozen pin also
+  freezes the action's bundled tooling, which is how the 0.10.0 publish failed
+- `workflow_dispatch` entry point on the publish workflow, taking an existing
+  tag as input. A tag push runs the workflow file as of the tagged commit, so
+  a fix to the workflow itself previously required moving the tag; dispatching
+  from `main` publishes the tagged source using the branch's workflow instead
+
 ## [0.10.0] - 2026-08-11
 
 ### Added
