@@ -33,6 +33,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Make `python.defaultInterpreterPath` in `.vscode/settings.json` absolute
+  (`${workspaceFolder}/.venv/bin/python`). The Python Environments extension
+  (`ms-python.vscode-python-envs`) passes the configured value straight to
+  `Uri.file()` without joining it to the workspace folder, so the relative form
+  resolved to `/.venv/bin/python` and raised a "Could not resolve interpreter
+  path" popup on every window open
+
 - Correct the `actions/checkout` pin comments, which still read `# v4` after
   Dependabot moved the SHA to v7.0.1. Dependabot rewrites a full-version
   comment alongside the SHA but leaves a bare major alone, so the annotation
