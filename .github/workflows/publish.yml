@@ -4,9 +4,21 @@ on:
   push:
     tags:
       - "v*"
+  # Manual retry path. A tag push runs the workflow file as it exists at the
+  # tagged commit, so a CI-only fix would otherwise have to be folded into the
+  # tag. Dispatching from a branch runs that branch's workflow against an
+  # already-pushed tag instead, leaving the tag on the release commit.
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Existing tag to publish, e.g. v0.10.0"
+        required: true
+        type: string
 
 jobs:
   test:
+    # On dispatch this runs the caller's ref, not the tag; it is a smoke test
+    # for the retry, not a substitute for the matrix that ran on the tag push.
     uses: ./.github/workflows/test.yml
 
   publish:
@@ -18,6 +30,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5  # v4
+        with:
+          ref: ${{ inputs.tag || github.ref_name }}
 
       - uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e  # v6
 
@@ -48,6 +62,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5  # v4
+        with:
+          ref: ${{ inputs.tag || github.ref_name }}
 
       - name: Extract release notes from CHANGELOG.md
         run: |
@@ -65,12 +81,14 @@ jobs:
               out.write(match.group(1).strip())
           PYEOF
         env:
-          VERSION: ${{ github.ref_name }}
+          VERSION: ${{ inputs.tag || github.ref_name }}
 
       - name: Create GitHub Release
         run: |
-          gh release create "${{ github.ref_name }}" \
-            --title "${{ github.ref_name }}" \
+          gh release create "$TAG" \
+            --title "$TAG" \
+            --verify-tag \
             --notes-file release_notes.md
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: ${{ inputs.tag || github.ref_name }}
