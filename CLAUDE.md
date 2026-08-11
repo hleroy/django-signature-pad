@@ -183,7 +183,7 @@ The changelog format follows [Keep a Changelog](https://keepachangelog.com/en/1.
 
 ### Dependabot pull requests
 
-Dependabot opens a grouped `github-actions` bump weekly and cannot edit
+Dependabot opens a grouped `github-actions` bump monthly and cannot edit
 `CHANGELOG.md`. Merge those pull requests as they are; do not hand-write a
 changelog entry per bump, and do not push changelog-only commits onto a
 Dependabot branch (a rebase would discard them).
@@ -198,7 +198,7 @@ gh pr list --state merged --author app/dependabot --search "merged:>=$(git log -
 
 A bullet such as *"Update pinned GitHub Actions (`actions/checkout` 4 → 7,
 `astral-sh/setup-uv` 6 → 9)"* is enough — readers care about which actions
-moved, not about each weekly PR.
+moved, not about each individual PR.
 
 When reviewing one of these PRs, verify that each new SHA really is the tag
 claimed in its trailing comment before merging:
