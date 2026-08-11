@@ -26,6 +26,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   pin comments to carry the full version (`# v7.0.1`) rather than a bare major
   (`# v4`), which Dependabot leaves stale when it updates the SHA
 
+- Move the Dependabot schedule from weekly to monthly. A weekly grouped bump is
+  more review traffic than a project of this size warrants; GitHub still raises
+  security updates outside the schedule, so this only delays routine version
+  bumps
+
 ### Fixed
 
 - Correct the `actions/checkout` pin comments, which still read `# v4` after
