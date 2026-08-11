@@ -16,7 +16,7 @@ By design, signatures are stored as PNG images encoded as data URLs. This means:
 📦 Common installation methods include:
 
 - Using npm: `npm install signature_pad`
-- Using a CDN: `<script src="https://cdn.jsdelivr.net/npm/signature_pad@5.0.4/dist/signature_pad.umd.min.js"></script>`
+- Using a CDN: `<script src="https://cdn.jsdelivr.net/npm/signature_pad@5.1.4/dist/signature_pad.umd.min.js"></script>`
 - Downloading directly from [GitHub releases](https://github.com/szimek/signature_pad/releases)
 
 ## Security Features

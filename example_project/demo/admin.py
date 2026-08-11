@@ -7,5 +7,5 @@ from .models import Document
 class DocumentAdmin(admin.ModelAdmin):
     class Media:
         js = [
-            "https://cdn.jsdelivr.net/npm/signature_pad@5.0.4/dist/signature_pad.umd.min.js",
+            "https://cdn.jsdelivr.net/npm/signature_pad@5.1.4/dist/signature_pad.umd.min.js",
         ]
