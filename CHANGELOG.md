@@ -7,25 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Added
-
-- README section on Content Security Policy: the widget ships no inline
-  JavaScript or CSS and works under `script-src 'self'`, and nonce-based
-  policies should render the assets with `{% csp_nonce_attr form.media %}`
-  (Django 6.1+) rather than `{{ form.media }}`
-
-### Changed
-
-- Bump the `signature_pad` CDN reference from 5.0.4 to 5.1.4 in the example
-  project (template and admin `Media`) and in the README installation notes;
-  the SRI hash in `base.html` was regenerated for the new file
-
-## [0.10.0] - 2026-08-09
+## [0.10.0] - 2026-08-11
 
 ### Added
 
 - Test against Django 6.1 and Python 3.14, both of which were missing from the
   CI matrix
+- README section on Content Security Policy: the widget ships no inline
+  JavaScript or CSS and works under `script-src 'self'`, and nonce-based
+  policies should render the assets with `{% csp_nonce_attr form.media %}`
+  (Django 6.1+) rather than `{{ form.media }}`
 
 ### Changed
 
@@ -40,6 +31,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Bump the `django-upgrade` pre-commit hook to 1.31.1 and its target to 5.2
   to match the new floor; the 5.2 target is only accepted from
   django-upgrade 1.23.0 onwards
+- Bump the `signature_pad` CDN reference from 5.0.4 to 5.1.4 in the example
+  project (template and admin `Media`) and in the README installation notes;
+  the SRI hash in `base.html` was regenerated for the new file
 
 ### Fixed
 
