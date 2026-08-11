@@ -17,6 +17,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   a fix to the workflow itself previously required moving the tag; dispatching
   from `main` publishes the tagged source using the branch's workflow instead
 
+### Fixed
+
+- Correct the `actions/checkout` pin comments, which still read `# v4` after
+  Dependabot moved the SHA to v7.0.1. Dependabot rewrites a full-version
+  comment alongside the SHA but leaves a bare major alone, so the annotation
+  had become a lie about what the pin contained
+
 ## [0.10.0] - 2026-08-11
 
 ### Added
