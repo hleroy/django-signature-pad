@@ -4,3 +4,9 @@ __pycache__
 dist
 .venv
 example_project/db.sqlite3
+
+# Untracked on purpose: this is a library, so the lock is a local dev
+# convenience, never what consumers install. Committing it put every
+# transitive pin into GitHub's dependency graph and raised Dependabot alerts
+# for the dev/demo environment rather than for the package itself.
+uv.lock

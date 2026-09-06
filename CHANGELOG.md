@@ -19,6 +19,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Stop tracking `uv.lock`. The lock only pinned the development and demo
+  environment — consumers resolve `Django>=5.2` themselves, the CI matrix
+  installs an explicit Django per job, and pre-commit pins its own hook
+  revisions — but committing it exposed every transitive pin to GitHub's
+  dependency graph, which raised Dependabot alerts against the example project
+  rather than against the package
+
 - Exempt Dependabot pull requests from the mandatory-changelog rule in
   `CLAUDE.md`, since the bot cannot edit `CHANGELOG.md` and the weekly grouped
   bump would otherwise breach the rule every week; grouped action bumps are

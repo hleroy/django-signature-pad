@@ -22,6 +22,9 @@ uv lock --upgrade
 uv sync --group dev
 ```
 
+`uv.lock` is generated locally and is not committed, so there is nothing to
+push after an upgrade: it exists only to pin your own environment.
+
 ## Publishing to PyPI and GitHub Releases
 
 Releases are automated via the `Publish` GitHub Actions workflow using PyPI
