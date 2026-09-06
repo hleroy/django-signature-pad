@@ -70,7 +70,13 @@ uv lock --upgrade         # regenerate uv.lock with latest compatible versions
 uv sync --group dev       # apply to local environment
 ```
 
-Commit the updated `uv.lock` together with any `pyproject.toml` changes.
+`uv.lock` is deliberately **not** tracked (see `.gitignore`). It is a local
+development convenience: consumers resolve `Django>=5.2` themselves, the CI
+matrix overrides Django per job, and pre-commit pins its own hook revisions,
+so nothing reproducible depended on it. Tracking it only fed the dev and demo
+environment's transitive pins into GitHub's dependency graph, which raised
+Dependabot alerts unrelated to the package. Commit `pyproject.toml` changes
+on their own.
 
 ## Security practices
 
