@@ -52,6 +52,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   comment alongside the SHA but leaves a bare major alone, so the annotation
   had become a lie about what the pin contained
 
+### Security
+
+- Restrict `GITHUB_TOKEN` permissions explicitly in all workflows
+
 ## [0.10.0] - 2026-08-11
 
 ### Added
