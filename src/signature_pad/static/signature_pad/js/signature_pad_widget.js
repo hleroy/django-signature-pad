@@ -96,13 +96,12 @@ document.addEventListener("DOMContentLoaded", () => {
       setTimeout(resizeCanvas, 500);
     });
 
-    // Handle form submission
+    // Handle form submission. An empty pad leaves the input untouched, so a
+    // signature saved earlier survives edits to other fields; the clear
+    // button is the only way to remove it.
     canvas.closest("form").addEventListener("submit", () => {
       if (!signaturePads[canvas.id].isEmpty()) {
-        const dataURL = signaturePads[canvas.id].toDataURL("image/png");
-        input.value = dataURL;
-      } else {
-        input.value = "";
+        input.value = signaturePads[canvas.id].toDataURL("image/png");
       }
     });
 

@@ -52,6 +52,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   comment alongside the SHA but leaves a bare major alone, so the annotation
   had become a lie about what the pin contained
 
+- Editing a saved record no longer erases its signature. The pad starts empty
+  on an edit form, and submitting it untouched used to overwrite the stored
+  value with an empty string, so changing any other field (for example in the
+  admin) either wiped the signature or failed with "This field is required".
+  An empty pad now leaves the stored value alone; the clear button still
+  removes it
+
 ## [0.10.0] - 2026-08-11
 
 ### Added
