@@ -7,11 +7,12 @@ By design, signatures are stored as PNG images encoded as data URLs. This means:
 - Signatures can only be displayed as images after being saved
 - Signatures cannot be loaded back into the signature pad for editing
 - To modify a signature, users must draw a new one from scratch
+- On an edit form the pad starts empty; submitting it untouched keeps the stored signature, and the clear button removes it
 - This design decision was made to ensure signature integrity and simplify storage requirements.
 
 ![django_signature_pad.png](django_signature_pad.png)
 
-⚠️ **Important Note**: This package does not include the `signature_pad` JavaScript library. You need to install it separately following the instructions on [GitHub](https://github.com/szimek/signature_pad/).
+⚠️ **Important Note**: This package does not include the `signature_pad` JavaScript library. You need to install it separately (version 5.1.0 or later) following the instructions on [GitHub](https://github.com/szimek/signature_pad/).
 
 📦 Common installation methods include:
 
