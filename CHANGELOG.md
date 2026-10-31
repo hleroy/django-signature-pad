@@ -19,6 +19,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- The widget now requires `signature_pad` 5.1.0 or later. It repaints the
+  canvas after a resize with the library's `redraw()` method instead of saving
+  and restoring the strokes by hand, and logs a console error when loaded
+  alongside an older version
+
 - Stop tracking `uv.lock`. The lock only pinned the development and demo
   environment — consumers resolve `Django>=5.2` themselves, the CI matrix
   installs an explicit Django per job, and pre-commit pins its own hook
